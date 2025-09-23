@@ -1,0 +1,15 @@
+pyyaml==6.0.1
+Cython==0.29.36
+drf-spectacular==0.26.2
+langchain
+openai
+faiss-cpu
+chromadb
+pytest
+python-dotenv  # For loading environment variables
+#docker-compose==1.29.2  # Specify the version or use the latest
+setuptools>=58.0.0
+langchain 
+langchain-community
+tiktoken
+langchain-openai

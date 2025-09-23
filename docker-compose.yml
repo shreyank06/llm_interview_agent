@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  ai_interview:
+    build: .
+    container_name: ai_interview_app
+    ports:
+      - "8000:8000"  # Map container port 8000 to local port 8000 (optional if needed)
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # You can store your API key in the environment file
+    volumes:
+      - .:/app  # Mount the current directory to the /app directory inside the container
+    restart: always  # Ensures that the container restarts if it crashes
