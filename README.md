@@ -16,5 +16,5 @@ docker-compose up -d
 ```
 after the docker image is built, enter the docker env
 ```
-docker-compose run --rm ai_interview /bin/bash
+docker-compose run --rm ai_interview_app
 ```
