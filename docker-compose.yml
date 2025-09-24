@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  ai_interview:
+  ai_interview_app:
     build: .
     container_name: ai_interview_app
     ports:
