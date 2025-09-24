@@ -10,7 +10,10 @@ class TechnicalInterview:
         self.llm = llm
         self.vector_store = vector_store
         self.faiss_index = faiss_index  # New line to store the FAISS index
-        self.question_generator = QuestionGenerator(llm, vector_store, OPENAI_API_KEY)
+        self.OPENAI_API_KEY = OPENAI_API_KEY
+        # print(self.OPENAI_API_KEY)
+        # sys.exit()
+        self.question_generator = QuestionGenerator(llm, vector_store, self.faiss_index, self.OPENAI_API_KEY)
         
         # Define evaluation tools using LangGraph
         self.tools = [
@@ -32,7 +35,7 @@ class TechnicalInterview:
         ]
         
         self.agent = create_react_agent(
-            model="gpt-4",  # Use the GPT-4 model name
+            model=self.llm,  # Use the GPT-4 model name
             tools=self.tools,
             prompt="You are a helpful assistant conducting a technical interview"
         )

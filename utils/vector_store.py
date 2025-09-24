@@ -64,7 +64,7 @@ def generate_dynamic_questions(topic, num_questions=3, OPENAI_API_KEY=None):
         input_variables=["topic", "num_questions"],
         template="Generate {num_questions} interview questions on {topic}. Only provide technical questions related to {topic}."
     )
-    print(OPENAI_API_KEY)
+    #print(OPENAI_API_KEY)
     llm_chain = LLMChain(
         llm=OpenAI(temperature=0.7, openai_api_key=OPENAI_API_KEY),
         prompt=prompt

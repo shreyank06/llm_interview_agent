@@ -1,13 +1,15 @@
 import faiss
 import numpy as np
 from langchain.embeddings import OpenAIEmbeddings
+import sys
 
 class QuestionGenerator:
     def __init__(self, llm, vector_store=None, faiss_index=None, openai_api_key=None):
         self.llm = llm
         self.vector_store = vector_store if vector_store else [] 
         self.openai_api_key = openai_api_key # List of questions
-        print(f"OpenAI API Key: {self.openai_api_key}")  # Debugging line to check if the key is passed correctly
+        # print(self.openai_api_key)
+        # sys.exit()  # Debugging line to check if the key is passed correctly
         # Initialize embeddings before calling create_faiss_index
         self.embeddings = OpenAIEmbeddings(openai_api_key=self.openai_api_key)  # Initialize OpenAIEmbeddings
         
