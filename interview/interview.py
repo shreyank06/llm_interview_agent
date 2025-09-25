@@ -14,67 +14,48 @@ class TechnicalInterview:
         # print(self.OPENAI_API_KEY)
         # sys.exit()
         self.question_generator = QuestionGenerator(llm, vector_store, self.faiss_index, self.OPENAI_API_KEY)
-        
-        # Define evaluation tools using LangGraph
-        self.tools = [
-            Tool(
-                name="clarity_tool",
-                func=self.evaluate_clarity,
-                description="Evaluate the clarity of the answer out of 10"
-            ),
-            Tool(
-                name="accuracy_tool",
-                func=self.evaluate_accuracy,
-                description="Evaluate the accuracy of the answer"
-            ),
-            Tool(
-                name="depth_tool",
-                func=self.evaluate_depth,
-                description="Evaluate the depth of the answer"
-            )
-        ]
-        
+
+        # Initialize agent without predefined tools for evaluation
         self.agent = create_react_agent(
             model=self.llm,  # Use the GPT-4 model name
-            tools=self.tools,
+            tools=[],  # No predefined tools, agent will handle the evaluation based on prompt
             prompt="You are a helpful assistant conducting a technical interview"
         )
 
     def start_interview(self, topic):
         print(f"Starting interview on {topic}...\n")
+        evaluation_list = []
         
         for i in range(3):  # Ask 3 questions in total
             question = self.ask_question(topic, i)
             print(f"Question: {question}")
             answer = input("Your answer: ")
 
-            # Use LangGraph's agent to evaluate the answer
-            evaluation = self.agent.invoke(
-                {"messages": [{"role": "user", "content": answer}]}
-            )
+            # Evaluate the answer based on clarity, accuracy, and depth using intelligent evaluation
+            evaluation = self.evaluate_answer_intelligently(answer)
             
-            # Extract and print the AI's content from the evaluation
-            ai_message = evaluation['messages'][-1].content  # Get the content of the AI's last message
-            print(f"\nAI's Response: {ai_message}")
+            # Print the evaluation feedback
+            print(f"\nAI's Evaluation: {evaluation}")
+            print(type(evaluation))
+            evaluation_list.append(evaluation)
+            # print(evaluation_list)
+            # sys.exit()  # Debugging line to check the evaluation output
 
-            # Provide feedback based on evaluation
-            feedback = self.provide_feedback(evaluation)
-            print("Feedback for your answer:")
-            print(feedback)
+            # # Provide feedback based on evaluation
+            # feedback = self.provide_feedback(evaluation)
+            # print("Feedback for your answer:")
+            # print(feedback)
 
             # Adjust the topic based on evaluation (dynamic branching)
             topic = self.adjust_topic_based_on_answer(evaluation)
-            # print(topic)
-            # sys.exit()  # Debugging line to check the adjusted topic
 
         # Summarize the performance after 3 questions
+        print(evaluation_list)
+        sys.exit()
         self.summarize_performance()
-
 
     def ask_question(self, topic, question_num):
         # Attempt to retrieve questions from vector store or generate dynamically
-        # print(self.vector_store)
-        # sys.exit()
         if self.vector_store:
             # Retrieve question(s) from vector store (assuming it's a list)
             question = self.vector_store[question_num]  # Choose the first question from vector store
@@ -83,27 +64,79 @@ class TechnicalInterview:
             question = self.question_generator.generate_dynamic_question(topic)
         return question
 
-    def provide_feedback(self, evaluation):
-        """Provide feedback based on the evaluation"""
-        # Provide clear feedback based on evaluation (clarity, accuracy, depth)
-        feedback = []
-        clarity = evaluation.get("clarity", 0)
-        accuracy = evaluation.get("accuracy", 0)
-        depth = evaluation.get("depth", 0)
+    def evaluate_answer_intelligently(self, answer):
+        """Evaluate the answer using an intelligent agent (GPT-4 or similar)"""
+        
+        # Define the dynamic prompt for intelligent evaluation
+        prompt = f"Evaluate the following answer based on clarity, accuracy, and depth. Please provide scores for each aspect out of 10:\n\nAnswer: '{answer}'\n\nReturn the evaluation in the format: clarity: X, accuracy: X, depth: X and offer personalized feedback as well"
+        
+        # Invoke the agent to evaluate the answer
+        evaluation = self.agent.invoke({"messages": [{"role": "user", "content": prompt}]})
+        
+        # Extract and parse the evaluation response
+        ai_message = evaluation['messages'][-1].content  # Get the content of the AI's last message
+        return ai_message
+        # print(ai_message)
+        # sys.exit()  # Debugging line to check the AI's response
+        #return self.parse_evaluation(ai_message)
 
-        feedback.append(f"Clarity: {clarity}/10")
-        feedback.append(f"Accuracy: {accuracy}/10")
-        feedback.append(f"Depth: {depth}/10")
+    def parse_evaluation(self, evaluation_response):
+        """Parse the agent's response to get clarity, accuracy, and depth scores"""
+        evaluation = {}
+        print(evaluation_response)  # Debugging line to see the raw response
+        #sys.exit()  # Debugging line to stop execution and check the response
+        # Example response format: "clarity: 8, accuracy: 7, depth: 6"
+        parts = evaluation_response.split(',')
+        for part in parts:
+            criterion, score = part.split(':')
+            evaluation[criterion.strip()] = int(score.strip())
+        return evaluation
 
-        return "\n".join(feedback)
+    # def provide_feedback(self, evaluation):
+    #     """Provide feedback based on the evaluation"""
+    #     clarity = evaluation.get("clarity", 0)
+    #     accuracy = evaluation.get("accuracy", 0)
+    #     depth = evaluation.get("depth", 0)
+
+    #     feedback = []
+    #     feedback.append(f"Clarity: {clarity}/10")
+    #     feedback.append(f"Accuracy: {accuracy}/10")
+    #     feedback.append(f"Depth: {depth}/10")
+
+    #     return "\n".join(feedback)
 
     def adjust_topic_based_on_answer(self, evaluation):
-        """Adjust topic based on the evaluation"""
-        # Adjust topic dynamically based on the clarity, accuracy, and depth scores
-        clarity = evaluation.get("clarity", 0)
-        accuracy = evaluation.get("accuracy", 0)
-        depth = evaluation.get("depth", 0)
+        """Adjust topic based on the evaluation already performed by the agent"""
+        
+        # Define the prompt to extract clarity, accuracy, and depth from the evaluation
+        prompt = f"""
+        Given the following evaluation, extract the clarity, accuracy, and depth scores as a dictionary with the keys 'clarity', 'accuracy', and 'depth'. The evaluation is already completed by the agent, so just return the scores.
 
+        Evaluation: {evaluation}
+
+        Return the evaluation in this format:
+        {{
+            "clarity": X,
+            "accuracy": X,
+            "depth": X
+        }}
+        """
+
+        # Invoke the agent to parse the evaluation
+        evaluation_result = self.agent.invoke({"messages": [{"role": "user", "content": prompt}]})
+        
+        # Extract and parse the evaluation response into a dictionary
+        ai_message = evaluation_result['messages'][-1].content  # Get the content of the AI's last message
+
+        # Convert the response into a dictionary
+        evaluation_dict = eval(ai_message)  # Make sure this is a valid dictionary
+        
+        # Extract clarity, accuracy, and depth from the evaluation dictionary
+        clarity = evaluation_dict.get("clarity", 0)
+        accuracy = evaluation_dict.get("accuracy", 0)
+        depth = evaluation_dict.get("depth", 0)
+
+        # Adjust topic based on the evaluation
         if clarity < 4:
             return "Beginner-level questions (focus on clarity)"
         elif accuracy < 5:
@@ -112,6 +145,7 @@ class TechnicalInterview:
             return "Intermediate-level questions (focus on depth)"
         else:
             return "Advanced-level topics"
+
 
     def summarize_performance(self):
         """Summarize overall performance after the interview"""
@@ -130,15 +164,3 @@ class TechnicalInterview:
         print(f"Accuracy: {accuracy}/10")
         print(f"Depth: {depth}/10")
 
-    # Example of evaluation functions that will be used by LangGraph tools
-    def evaluate_clarity(self, answer):
-        """Evaluate the clarity of the answer"""
-        return len(answer.split())  # Simple clarity check: word count
-
-    def evaluate_accuracy(self, answer):
-        """Evaluate the accuracy of the answer"""
-        return 8 if "correct" in answer else 4  # Basic accuracy check for demo purposes
-
-    def evaluate_depth(self, answer):
-        """Evaluate the depth of the answer"""
-        return 6 if len(answer.split()) > 5 else 3  # Basic depth check for demo purposes
