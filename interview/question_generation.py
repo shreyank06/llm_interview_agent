@@ -1,6 +1,6 @@
 import faiss
 import numpy as np
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 import sys
 
 class QuestionGenerator:

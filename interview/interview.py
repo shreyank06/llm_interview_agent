@@ -20,7 +20,7 @@ class TechnicalInterview:
             Tool(
                 name="clarity_tool",
                 func=self.evaluate_clarity,
-                description="Evaluate the clarity of the answer"
+                description="Evaluate the clarity of the answer out of 10"
             ),
             Tool(
                 name="accuracy_tool",
@@ -44,8 +44,8 @@ class TechnicalInterview:
         print(f"Starting interview on {topic}...\n")
         
         for i in range(3):  # Ask 3 questions in total
-            question = self.ask_question(topic)
-            print(f"Question {i+1}: {question}")
+            question = self.ask_question(topic, i)
+            print(f"Question: {question}")
             answer = input("Your answer: ")
 
             # Use LangGraph's agent to evaluate the answer
@@ -64,16 +64,20 @@ class TechnicalInterview:
 
             # Adjust the topic based on evaluation (dynamic branching)
             topic = self.adjust_topic_based_on_answer(evaluation)
+            # print(topic)
+            # sys.exit()  # Debugging line to check the adjusted topic
 
         # Summarize the performance after 3 questions
         self.summarize_performance()
 
 
-    def ask_question(self, topic):
+    def ask_question(self, topic, question_num):
         # Attempt to retrieve questions from vector store or generate dynamically
+        # print(self.vector_store)
+        # sys.exit()
         if self.vector_store:
             # Retrieve question(s) from vector store (assuming it's a list)
-            question = self.vector_store[0]  # Choose the first question from vector store
+            question = self.vector_store[question_num]  # Choose the first question from vector store
         else:
             # Generate a dynamic question based on the topic
             question = self.question_generator.generate_dynamic_question(topic)

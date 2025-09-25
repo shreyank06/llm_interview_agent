@@ -35,9 +35,6 @@ def is_technical_topic(topic, OPENAI_API_KEY):
     :param OPENAI_API_KEY: The OpenAI API key.
     :return: True if the topic is technical, False otherwise.
     """
-    # Manually handle specific topics like 'carbon dioxide'
-    if topic.lower() == "carbon dioxide":
-        return True  # Treat 'carbon dioxide' as technical
 
     prompt = f"Is '{topic}' a technical topic related to IT, programming, or technology? Answer with 'Yes' or 'No'."
     

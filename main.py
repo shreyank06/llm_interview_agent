@@ -6,8 +6,7 @@ import sys
 import warnings
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = "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"
-
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
