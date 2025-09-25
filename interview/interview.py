@@ -4,6 +4,7 @@ from interview.question_generation import QuestionGenerator
 from langgraph.prebuilt import create_react_agent
 from langchain.agents import Tool, AgentType
 import sys
+import re
 
 class TechnicalInterview:
     def __init__(self, llm, vector_store=None, faiss_index=None, OPENAI_API_KEY=None):
@@ -38,21 +39,15 @@ class TechnicalInterview:
             print(f"\nAI's Evaluation: {evaluation}")
             print(type(evaluation))
             evaluation_list.append(evaluation)
-            # print(evaluation_list)
-            # sys.exit()  # Debugging line to check the evaluation output
-
-            # # Provide feedback based on evaluation
-            # feedback = self.provide_feedback(evaluation)
-            # print("Feedback for your answer:")
-            # print(feedback)
 
             # Adjust the topic based on evaluation (dynamic branching)
             topic = self.adjust_topic_based_on_answer(evaluation)
 
+
         # Summarize the performance after 3 questions
-        print(evaluation_list)
-        sys.exit()
-        self.summarize_performance()
+        # print(evaluation_list)
+        # sys.exit()
+        self.summarize_evaluation(evaluation_list)
 
     def ask_question(self, topic, question_num):
         # Attempt to retrieve questions from vector store or generate dynamically
@@ -147,11 +142,47 @@ class TechnicalInterview:
             return "Advanced-level topics"
 
 
-    def summarize_performance(self):
-        """Summarize overall performance after the interview"""
-        print("\nInterview performance summary:")
-        # Here, you can add logic to summarize the total scores or performance over the 3 questions
-        print("Performance summary will be based on the feedback scores.")
+    def summarize_evaluation(self, evaluation_list):
+        """Summarize the evaluation using the agent to calculate averages and feedback"""
+        
+        # Initialize variables to hold cumulative values for clarity, accuracy, and depth
+        total_clarity = 0
+        total_accuracy = 0
+        total_depth = 0
+
+        # Parse evaluations and calculate cumulative values
+        for evaluation in evaluation_list:
+           # print(evaluation.split('\n')[0])
+            scores=evaluation.split('\n')[0]
+            #sys.exit()
+            clarity = int(re.search(r'Clarity:\s*(\d+)', scores).group(1))
+            # print(clarity)
+            # sys.exit()
+            accuracy = int(re.search(r'Accuracy:\s*(\d+)', scores).group(1))
+            depth = int(re.search(r'Depth:\s*(\d+)', scores).group(1))
+
+            total_clarity += clarity
+            total_accuracy += accuracy
+            total_depth += depth
+
+        # Calculate averages
+        num_evaluations = len(evaluation_list)
+        average_clarity = total_clarity / num_evaluations
+        average_accuracy = total_accuracy / num_evaluations
+        average_depth = total_depth / num_evaluations
+
+        # Construct the overall feedback based on the averages
+        overall_feedback = "Your overall feedback here"
+
+        result = {
+            "average_clarity": average_clarity,
+            "average_accuracy": average_accuracy,
+            "average_depth": average_depth,
+            "overall_feedback": overall_feedback
+        }
+
+        print(result)
+        sys.exit()  # Debugging line to check the summary result
 
     def print_evaluation(self, evaluation):
         """Print the evaluation content (clarity, accuracy, depth) in a readable format"""
