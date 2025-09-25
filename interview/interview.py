@@ -22,6 +22,9 @@ class TechnicalInterview:
             tools=[],  # No predefined tools, agent will handle the evaluation based on prompt
             prompt="You are a helpful assistant conducting a technical interview"
         )
+        self.clarity = 0
+        self.accuracy = 0
+        self.depth = 0  
 
     def start_interview(self, topic):
         print(f"Starting interview on {topic}...\n")
@@ -37,7 +40,6 @@ class TechnicalInterview:
             
             # Print the evaluation feedback
             print(f"\nAI's Evaluation: {evaluation}")
-            print(type(evaluation))
             evaluation_list.append(evaluation)
 
             # Adjust the topic based on evaluation (dynamic branching)
@@ -47,7 +49,7 @@ class TechnicalInterview:
         # Summarize the performance after 3 questions
         # print(evaluation_list)
         # sys.exit()
-        self.summarize_evaluation(evaluation_list)
+        self.summarize_evaluation(evaluation_list, i)
 
     def ask_question(self, topic, question_num):
         # Attempt to retrieve questions from vector store or generate dynamically
@@ -131,6 +133,11 @@ class TechnicalInterview:
         accuracy = evaluation_dict.get("accuracy", 0)
         depth = evaluation_dict.get("depth", 0)
 
+        self.clarity = self.clarity + clarity
+        self.accuracy = self.accuracy + accuracy
+        self.depth = self.depth + depth 
+
+
         # Adjust topic based on the evaluation
         if clarity < 4:
             return "Beginner-level questions (focus on clarity)"
@@ -142,46 +149,52 @@ class TechnicalInterview:
             return "Advanced-level topics"
 
 
-    def summarize_evaluation(self, evaluation_list):
+    def summarize_evaluation(self, evaluation_list, i):
         """Summarize the evaluation using the agent to calculate averages and feedback"""
         
+        average_clarity = self.clarity / (i + 1)
+        average_accuracy = self.accuracy / (i + 1)
+        average_depth = self.depth / (i + 1)
+        overall_feedback = f"Overall, your performance shows an average clarity of {average_clarity:.2f}, accuracy of {average_accuracy:.2f}, and depth of {average_depth:.2f}. Keep practicing to improve these areas!"
+        print(overall_feedback)
+
         # Initialize variables to hold cumulative values for clarity, accuracy, and depth
-        total_clarity = 0
-        total_accuracy = 0
-        total_depth = 0
+        # total_clarity = 0
+        # total_accuracy = 0
+        # total_depth = 0
 
-        # Parse evaluations and calculate cumulative values
-        for evaluation in evaluation_list:
-           # print(evaluation.split('\n')[0])
-            scores=evaluation.split('\n')[0]
-            #sys.exit()
-            clarity = int(re.search(r'Clarity:\s*(\d+)', scores).group(1))
-            # print(clarity)
-            # sys.exit()
-            accuracy = int(re.search(r'Accuracy:\s*(\d+)', scores).group(1))
-            depth = int(re.search(r'Depth:\s*(\d+)', scores).group(1))
+        # # Parse evaluations and calculate cumulative values
+        # for evaluation in evaluation_list:
+        #     print(evaluation.split('\n')[0])
+        #     scores=evaluation.split('\n')[0]
+        #     #sys.exit()
+        #     clarity = int(re.search(r'Clarity:\s*(\d+)', scores).group(1))
+        #     # print(clarity)
+        #     # sys.exit()
+        #     accuracy = int(re.search(r'Accuracy:\s*(\d+)', scores).group(1))
+        #     depth = int(re.search(r'Depth:\s*(\d+)', scores).group(1))
 
-            total_clarity += clarity
-            total_accuracy += accuracy
-            total_depth += depth
+        #     total_clarity += clarity
+        #     total_accuracy += accuracy
+        #     total_depth += depth
 
-        # Calculate averages
-        num_evaluations = len(evaluation_list)
-        average_clarity = total_clarity / num_evaluations
-        average_accuracy = total_accuracy / num_evaluations
-        average_depth = total_depth / num_evaluations
+        # # Calculate averages
+        # num_evaluations = len(evaluation_list)
+        # average_clarity = total_clarity / num_evaluations
+        # average_accuracy = total_accuracy / num_evaluations
+        # average_depth = total_depth / num_evaluations
 
-        # Construct the overall feedback based on the averages
-        overall_feedback = "Your overall feedback here"
+        # # Construct the overall feedback based on the averages
+        # overall_feedback = "Your overall feedback here"
 
-        result = {
-            "average_clarity": average_clarity,
-            "average_accuracy": average_accuracy,
-            "average_depth": average_depth,
-            "overall_feedback": overall_feedback
-        }
+        # result = {
+        #     "average_clarity": average_clarity,
+        #     "average_accuracy": average_accuracy,
+        #     "average_depth": average_depth,
+        #     "overall_feedback": overall_feedback
+        # }
 
-        print(result)
+        # print(result)
         sys.exit()  # Debugging line to check the summary result
 
     def print_evaluation(self, evaluation):
