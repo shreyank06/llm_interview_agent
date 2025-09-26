@@ -1,39 +1,59 @@
-from config.config import LLM_PARAMS
+from flask import Flask, render_template, request, jsonify
 from interview.interview import TechnicalInterview
 from utils.vector_store import load_faiss_vector_store
-from langchain_openai import ChatOpenAI  # Change this import
-import sys
+from langchain_openai import ChatOpenAI
+from config.config import LLM_PARAMS
 import warnings
 
-# Directly assign the OpenAI API key
-OPENAI_API_KEY = "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"
-# Suppress LangChain deprecation warnings
+# OpenAI API Key
+OPENAI_API_KEY = "your-openai-api-key"
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
+# Initialize Flask app
+app = Flask(__name__)
 
-def main():
-    # Initialize the LLM (Language Model) - Use ChatOpenAI instead of OpenAI
-    llm = ChatOpenAI(
-        model_name="gpt-3.5-turbo",  # or "gpt-4" if you have access
-        temperature=LLM_PARAMS['temperature'], 
-        openai_api_key=OPENAI_API_KEY
-    )
-    
-    topic = input("Enter the topic for the interview (e.g., JavaScript, Python, etc.): ")
+# Global variable to hold interview instance
+interview = None
+
+@app.route('/')
+def index():
+    return render_template('index.html')  # Initial page to input topic
+
+@app.route('/start_interview', methods=['POST'])
+def start_interview():
+    global interview
+    topic = request.form.get('topic')
 
     try:
-        # Load the FAISS vector store for questions (or create a new one)
+        # Load FAISS vector store for the topic
         vector_store, faiss_index = load_faiss_vector_store(topic, OPENAI_API_KEY)
     except ValueError as e:
-        # Print the error message without traceback
-        print(str(e))
-        sys.exit(1)
+        return f"Error: {str(e)}", 500
 
     # Initialize the interview system
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=LLM_PARAMS['temperature'], openai_api_key=OPENAI_API_KEY)
     interview = TechnicalInterview(llm, vector_store, faiss_index, OPENAI_API_KEY)
 
-    # Start the interview process
-    interview.start_interview(topic)
+    # Start the interview process and get the first question
+    question = interview.ask_question(topic, 0)
+    return render_template('interview.html', question=question, topic=topic)
+
+@app.route('/submit_answer', methods=['POST'])
+def submit_answer():
+    answer = request.form.get('answer')
+    topic = request.form.get('topic')
+
+    # Evaluate the answer
+    evaluation = interview.evaluate_answer_intelligently(answer)
+    
+    # Get the next question
+    question_num = int(request.form.get('question_num')) + 1
+    next_question = interview.ask_question(topic, question_num)
+    
+    return jsonify({
+        'evaluation': evaluation,
+        'next_question': next_question
+    })
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
