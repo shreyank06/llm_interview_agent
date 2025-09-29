@@ -9,15 +9,16 @@ warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
 
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
 
 def main():
     # ANSI escape code for bold and black text
-    bold_black = '\033[1;30m'  # Bold and black text
-    reset = '\033[0m'  # Reset formatting
+    cyan = "\033[36m"  # Cyan color
+    reset = "\033[0m"  # Reset color
+
 
     # Initialize the LLM (Language Model) - Use ChatOpenAI instead of OpenAI
     llm = ChatOpenAI(
@@ -26,7 +27,9 @@ def main():
         openai_api_key=OPENAI_API_KEY
     )
     
-    print(f"\n{bold_black}Enter the topic for the interview (e.g., JavaScript, Python, etc.): {reset}")
+    print(f"\n{cyan}Enter the topic for the interview (e.g., JavaScript, Python, etc.): {reset}")
+
+
     topic = input()
 
     try:
