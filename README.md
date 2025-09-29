@@ -1,4 +1,7 @@
 ### Execution
+```
+sudo docker-compose build --no-cache
+```
 start docker env
 ```
 docker-compose up -d
