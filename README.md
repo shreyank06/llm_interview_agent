@@ -1,20 +1,13 @@
 ### Execution
-start docker env
 ```
-docker-compose up -d
+sudo apt-get install docker-compose 
 ```
-if after this you get no module named disutils found, do this
 ```
-python3 -m venv myenv
-source myenv/bin/activate
-pip install setuptools
-deactivate
+sudo docker-compose build --no-cache
 ```
-and execute this again
-```
-docker-compose up -d
-```
+
 after the docker image is built, enter the docker env
+
 ```
 docker-compose run --rm ai_interview_app
 ```
