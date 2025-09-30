@@ -34,26 +34,6 @@ class BranchingLogic:
         )
 
         result = llm_chain.run({"evaluation": evaluation})
-        #print(result)
-
-        # prompt = f"""
-        # Given the following evaluation, extract the clarity, accuracy, and depth scores as a dictionary with the keys 'clarity', 'accuracy', and 'depth'. The evaluation is already completed by the agent, so just return the scores.
-
-        # Evaluation: {evaluation}
-
-        # Return the evaluation in this format:
-        # {{
-        #     "clarity": X,
-        #     "accuracy": X,
-        #     "depth": X
-        # }}
-        # """
-
-        # Invoke the agent to parse the evaluation
-        # evaluation_result = agent.invoke({"messages": [{"role": "user", "content": prompt}]})
-        
-        # Extract and parse the evaluation response into a dictionary
-        #ai_message = evaluation_result['messages'][-1].content  # Get the content of the AI's last message
 
         # Convert the response into a dictionary
         evaluation_dict = eval(result)  # Make sure this is a valid dictionary
