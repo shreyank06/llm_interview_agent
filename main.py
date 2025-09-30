@@ -6,10 +6,10 @@ import warnings
 from langchain_core._api.deprecation import LangChainDeprecationWarning
 warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
 from dotenv import load_dotenv
-import os
+
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
