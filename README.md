@@ -2,7 +2,7 @@
 This project is an AI-powered technical interview agent designed to simulate a short, interactive interview. The agent dynamically generates technical questions based on the selected topic, evaluates the user's answers, and provides performance feedback.
 
 ## Technologies USed
-Python, langchain, docker, llm
+**Python, langchain, docker, llm**
 
 ## Interview Flow
 
