@@ -65,7 +65,7 @@ class TechnicalInterview:
     def ask_question(self, topic, question_num, evaluation_list, question_list=None):
         """Ask a question using the QuestionGenerator"""
         question = self.question_generator.generate_dynamic_questions(topic, question_list, evaluation_list, self.agent, self.OPENAI_API_KEY)
-        print(question)
+        #print(question)
         return question
 
     def evaluate_answer_intelligently(self,question, answer):
