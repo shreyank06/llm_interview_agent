@@ -19,7 +19,7 @@ RUN apt-get update \
 EXPOSE 8000
 
 # Set environment variables (example for OpenAI API key)
-ENV OPENAI_API_KEY="your_openai_api_key_here"
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Define the command to run your application (entry point)
 CMD ["python", "main.py"]
