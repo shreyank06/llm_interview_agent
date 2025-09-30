@@ -1,15 +1,15 @@
 #from config.config import LLM_PARAMS
 from interview.interview import TechnicalInterview
+from utils.vector_store import load_faiss_vector_store
 from langchain_openai import ChatOpenAI  # Change this import
 import sys
 import warnings
 from langchain_core._api.deprecation import LangChainDeprecationWarning
 warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
-from dotenv import load_dotenv
-import os
+
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
@@ -32,8 +32,19 @@ def main():
 
     topic = input()
 
+    try:
+        # Load the FAISS vector store for questions (or create a new one)
+        vector_store, faiss_index = load_faiss_vector_store(topic, OPENAI_API_KEY)
+    except ValueError as e:
+        # Print the error message without traceback
+        print(str(e))
+        sys.exit(1)
+
+    #print(vector_store, faiss_index)
+    #sys.exit(0)
+
     # Initialize the interview system
-    interview = TechnicalInterview(llm, OPENAI_API_KEY)
+    interview = TechnicalInterview(llm, vector_store, faiss_index, OPENAI_API_KEY)
 
     # Start the interview process
     interview.start_interview(topic)

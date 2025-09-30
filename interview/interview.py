@@ -9,10 +9,12 @@ from langchain.chains import LLMChain
 import sys
 
 class TechnicalInterview:
-    def __init__(self, llm, OPENAI_API_KEY=None):
+    def __init__(self, llm, vector_store=None, faiss_index=None, OPENAI_API_KEY=None):
         self.llm = llm
+        self.vector_store = vector_store
+        self.faiss_index = faiss_index  # New line to store the FAISS index
         self.OPENAI_API_KEY = OPENAI_API_KEY
-        self.question_generator = QuestionGenerator(llm, self.OPENAI_API_KEY)
+        self.question_generator = QuestionGenerator(llm, vector_store, self.faiss_index, self.OPENAI_API_KEY)
 
         # Initialize agent without predefined tools for evaluation
         self.agent = create_react_agent(
@@ -63,7 +65,12 @@ class TechnicalInterview:
         self.performance_evaluator.summarize_evaluation()
 
     def ask_question(self, topic, question_num, evaluation_list, question_list=None):
-        """Ask a question using the QuestionGenerator"""
+        # Attempt to retrieve questions from vector store or generate dynamically
+        # if self.vector_store:
+        #     # Retrieve question(s) from vector store (assuming it's a list)
+        #     question = self.vector_store[question_num]  # Choose the first question from vector store
+        # else:
+        #     # Generate a dynamic question based on the topic
         question = self.question_generator.generate_dynamic_questions(topic, question_list, evaluation_list, self.agent, self.OPENAI_API_KEY)
         #print(question)
         return question
@@ -81,5 +88,10 @@ class TechnicalInterview:
             prompt=prompt
         )   
         evaluation = llm_chain.run({"question":question, "answer": answer})
+       # evaluation = eval(evaluation)
+        # print(evaluation)
+        # sys.exit()
 
+        #evaluation = self.agent.invoke({"messages": [{"role": "user", "content": prompt}]})
+        #ai_message = evaluation['messages'][-1].content  # Get the content of the AI's last message
         return evaluation   
