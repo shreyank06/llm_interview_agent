@@ -8,7 +8,7 @@ from langchain.chains import LLMChain
 
 
 class AnswerEvaluator:
-    def __init__(self, interview_count, topic, clarity, accuracy, depth, agent, openai_api_key):
+    def __init__(self, interview_count, topic, clarity, accuracy, depth, openai_api_key):
         """
         Initialize the AnswerEvaluator with the necessary parameters.
         
@@ -24,7 +24,7 @@ class AnswerEvaluator:
         self.clarity = clarity
         self.accuracy = accuracy
         self.depth = depth
-        self.agent = agent
+        #self.agent = agent
         self.openai_api_key = openai_api_key
 
     def summarize_evaluation(self):

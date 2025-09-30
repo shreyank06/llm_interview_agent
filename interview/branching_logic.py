@@ -4,15 +4,15 @@ from langchain_openai import OpenAI
 from langchain.chains import LLMChain
 
 class BranchingLogic:
-    def __init__(self, llm, openai_api_key):
+    def __init__(self):
+        #self.openai_api_key = openai_api_key
         self.clarity = 0
         self.accuracy = 0
         self.depth = 0  
-        self.llm = llm
-        self.openai_api_key = openai_api_key
+        #self.llm = llm
 
 
-    def adjust_topic_based_on_answer(self, evaluation, agent, topic):
+    def adjust_topic_based_on_answer(self, evaluation, openai_api_key):
         """Adjust topic based on the evaluation already performed by the agent"""
         
         # Define the prompt to extract clarity, accuracy, and depth from the evaluation
@@ -29,7 +29,7 @@ class BranchingLogic:
                      "}}"
         )   
         llm_chain = LLMChain(
-            llm=OpenAI(temperature=0.7, openai_api_key=self.openai_api_key),
+            llm=OpenAI(temperature=0.7, openai_api_key=openai_api_key),
             prompt=prompt
         )
 

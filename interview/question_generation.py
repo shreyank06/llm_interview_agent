@@ -13,11 +13,10 @@ from langchain_openai import OpenAI
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
 class QuestionGenerator:
-    def __init__(self, llm, openai_api_key=None):
-        self.llm = llm
+    def __init__(self, openai_api_key=None):
         self.openai_api_key = openai_api_key
         
-    def generate_dynamic_questions(self, topic, questions_list, evaluation_list=None, agent=None, openai_api_key=None):
+    def generate_dynamic_questions(self, topic, questions_list, evaluation_list=None, openai_api_key=None):
         """
         Use GPT to generate dynamic interview questions for the given topic.
         :param topic: The topic for the interview (e.g., JavaScript, Python, AI, etc.)
@@ -26,8 +25,6 @@ class QuestionGenerator:
         :param agent: The agent to use for question generation.
         :return: A list containing a single generated question.
         """
-        if agent is None:
-            raise ValueError("Agent parameter is required")
         
         # Build history context from evaluation_list
         history_context = ""

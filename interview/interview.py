@@ -1,5 +1,4 @@
 from interview.question_generation import QuestionGenerator
-from langgraph.prebuilt import create_react_agent
 from interview.branching_logic import BranchingLogic
 from interview.answer_evaluation import AnswerEvaluator
 from colorama import Fore, Style, init
@@ -9,22 +8,23 @@ from langchain.chains import LLMChain
 import sys
 
 class TechnicalInterview:
-    def __init__(self, llm, OPENAI_API_KEY=None):
-        self.llm = llm
+    def __init__(self, OPENAI_API_KEY=None):
+       # self.llm = llm
         self.OPENAI_API_KEY = OPENAI_API_KEY
-        self.question_generator = QuestionGenerator(llm, self.OPENAI_API_KEY)
+        self.question_generator = QuestionGenerator(self.OPENAI_API_KEY)
+        #print(self.OPENAI_API_KEY)
 
-        # Initialize agent without predefined tools for evaluation
-        self.agent = create_react_agent(
-            model=self.llm,
-            tools=[],
-            prompt="You are a helpful assistant conducting a technical interview"
-        )
-        self.branching_logic = BranchingLogic(self.llm, self.OPENAI_API_KEY)
+        # # Initialize agent without predefined tools for evaluation
+        # self.agent = create_react_agent(
+        #     model=self.llm,
+        #     tools=[],
+        #     prompt="You are a helpful assistant conducting a technical interview"
+        #)
+        self.branching_logic = BranchingLogic()
         self.clarity = 0
         self.accuracy = 0
         self.depth = 0
-        self.performance_evaluator = AnswerEvaluator(0, None, self.clarity, self.accuracy, self.depth, self.agent, self.OPENAI_API_KEY)
+        self.performance_evaluator = AnswerEvaluator(0, None, self.clarity, self.accuracy, self.depth, self.OPENAI_API_KEY)
 
     def start_interview(self, topic):
         # Starting the interview with clear formatting
@@ -55,7 +55,7 @@ class TechnicalInterview:
             evaluation_list.append(evaluation)
 
             # Adjust the topic based on evaluation (dynamic branching)
-            topic, self.clarity, self.accuracy, self.depth = self.branching_logic.adjust_topic_based_on_answer(evaluation, self.agent, topic)
+            topic, self.clarity, self.accuracy, self.depth = self.branching_logic.adjust_topic_based_on_answer(evaluation, self.OPENAI_API_KEY)
             # Optionally show the adjusted topic for next question
             #print(f"{Fore.CYAN}{Style.BRIGHT}Topic for next question: {topic}{Style.RESET_ALL}\n")
 
@@ -63,12 +63,12 @@ class TechnicalInterview:
         print(f"\n{Fore.YELLOW}{Style.BRIGHT}--- Interview Complete ---{Style.RESET_ALL}\n")
         
         # Use performance evaluator to summarize and color the evaluation
-        self.performance_evaluator = AnswerEvaluator(i, topic, self.clarity, self.accuracy, self.depth, self.agent, self.OPENAI_API_KEY)
+        self.performance_evaluator = AnswerEvaluator(i, topic, self.clarity, self.accuracy, self.depth, self.OPENAI_API_KEY)
         self.performance_evaluator.summarize_evaluation()
 
     def ask_question(self, topic, question_num, evaluation_list, question_list=None):
         """Ask a question using the QuestionGenerator"""
-        question = self.question_generator.generate_dynamic_questions(topic, question_list, evaluation_list, self.agent, self.OPENAI_API_KEY)
+        question = self.question_generator.generate_dynamic_questions(topic, question_list, evaluation_list, self.OPENAI_API_KEY)
         #print(question)
         return question
 

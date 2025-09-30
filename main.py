@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
@@ -18,22 +18,13 @@ def main():
     # ANSI escape code for bold and black text
     cyan = "\033[36m"  # Cyan color
     reset = "\033[0m"  # Reset color
-
-
-    # Initialize the LLM (Language Model) - Use ChatOpenAI instead of OpenAI
-    llm = ChatOpenAI(
-        model_name="gpt-3.5-turbo",  # or "gpt-4" if you have access
-        temperature=0.7, 
-        openai_api_key=OPENAI_API_KEY
-    )
     
     print(f"\n{cyan}Enter the topic for the interview (e.g., JavaScript, Python, etc.): {reset}")
 
-
     topic = input()
-
+    #print(OPENAI_API_KEY)
     # Initialize the interview system
-    interview = TechnicalInterview(llm, OPENAI_API_KEY)
+    interview = TechnicalInterview(OPENAI_API_KEY)
 
     # Start the interview process
     interview.start_interview(topic)
