@@ -37,9 +37,13 @@ class TechnicalInterview:
             print(f"\n{Fore.CYAN}{Style.BRIGHT}--- Question {i + 1} ---{Style.RESET_ALL}")
             
             question = self.ask_question(topic, i, evaluation_list, question_list)
+            #print(question)
+            cleaned_question = self.remove_text_from_question(question[0])
+            #print(cleaned_question)
             topic = None
+            #print(question)
             question_list.append(question)
-            print(f"{Fore.GREEN}{Style.BRIGHT}Question:{Style.RESET_ALL} {Fore.WHITE}{question[0]}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{Style.BRIGHT}Question:{Style.RESET_ALL} {Fore.WHITE}{cleaned_question}{Style.RESET_ALL}")
             
             answer = input(f"{Fore.MAGENTA}{Style.BRIGHT}Your answer: {Style.RESET_ALL}")
             
@@ -83,3 +87,16 @@ class TechnicalInterview:
         evaluation = llm_chain.run({"question":question, "answer": answer})
 
         return evaluation   
+    
+    def remove_text_from_question(self, question):
+        """Remove 'Question: ' prefix from the question string"""
+        prompt = PromptTemplate(
+            input_variables=["question"],
+            template="Remove all the prefix from the following question if it exists or any other text apart from the question. Return only the cleaned question.\n\nQuestion: {question}"
+        )
+        llm_chain = LLMChain(
+            llm=OpenAI(temperature=0.7, openai_api_key=self.OPENAI_API_KEY),
+            prompt=prompt
+        )   
+        cleaned_question = llm_chain.run({"question": question})
+        return cleaned_question.strip()

@@ -50,7 +50,7 @@ class QuestionGenerator:
         result = llm_chain.run({"topic": topic, "history_context": history_context, "questions_list": questions_list})
         questions = result.split("\n")
         question = questions[0].replace("Question: ", "").strip()
-        print(question)
+        #print(question)
 
         return [q.strip() for q in questions if q.strip()]  # Clean up any empty entries
 

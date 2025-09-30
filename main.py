@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 
 # Directly assign the OpenAI API key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 # Suppress LangChain deprecation warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
 
