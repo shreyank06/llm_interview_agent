@@ -90,29 +90,7 @@ class AnswerEvaluator:
         feedback_result_colored = self.apply_color_to_feedback(feedback_result)
         return feedback_result_colored
         sys.exit()
-
-        # # Use the agent to call the LLM with the feedback prompt
-        # evaluation_response = self.agent.invoke({
-        #     "messages": [{"role": "user", "content": prompt}]
-        # })
         
-        # print(evaluation_response)
-        # sys.exit()
-        # # Extract the response from the AI (get the content of the last message)
-        # ai_message = evaluation_response['messages'][-1].content
-        # print(ai_message)
-        # sys.exit()
-
-        # # Now apply color formatting to the response based on placeholders
-        # ai_message_colored = self.apply_color_to_feedback(ai_message)
-
-        # # Print the personalized feedback from the LLM with additional style
-        # print(f"\n{Fore.YELLOW}{Style.BRIGHT}Personalized Feedback for Technical Interview:{Style.RESET_ALL}\n")
-        # print(ai_message_colored)
-        
-        # # Optionally, return the AI's response if needed elsewhere
-        # return ai_message_colored
-
     def apply_color_to_feedback(self, feedback):
         """
         Apply color formatting to the AI feedback using colorama.
