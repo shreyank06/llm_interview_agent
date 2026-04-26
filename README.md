@@ -11,7 +11,7 @@ create new secret api key and
 go to main.py and 
 on line 12 replace this line 
 ```
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = ""
 ```
 by 
 ```
